@@ -1,0 +1,141 @@
+RYUZINE PRESS CHANGELOG
+
+Version 1.0
+* App Icons 
+	* Are now automatically generated from one image with Aqua Resizer
+	  (you no longer need multiple images already at the icon dimensions)
+	* Fixed missing App Icon for Windows “Metro” Tile
+	* Removed *-favicon.ico from templates since it can’t be auto-generated.
+* Added support for the new App Logo image
+
+* Add-Ons list is now auto-generated and they can be enabled/disabled is a list similar to  how you activate/deactivate WordPress plugins.
+
+* Integrated banner ad settings now consistent with other integrated advertising.
+
+* Lightbox shortcodes updated to HTML <figure> code.
+
+* If using “ryulightbox” add-on Lightbox Links no longer require using shortcode to set parameters (and if using no lightbox script they are simply regular <a> links)
+
+* Templates updated to new Ryuzine Document Format specification.
+
+* Edition-specific styles are now written into a “generated_css” folder instead of into the “ryuzine/css” folder, allowing updates of the Ryuzine webapp without having to regenerate the Edition external stylesheets.  The only time you’d need to regenerate them now would be after an update of Ryuzine Press itself.
+
+* Added ability to apply WordPress theme to Ryuzine Press Editions (though this can potentially break the Ryuzine layout and/or require over-rides in an Issue-specific Stylesheet to make it work).
+
+* Fixed numerous debug notices, mostly due to variables values being compared before checking if the variable has been set.
+
+* Fixed WordPress comment form inclusion in Ryuzine pages
+
+
+Version 0.9.6.8
+
+* Hiding of cover headers and footers fixed
+
+* Install to theme no longer necessary, now uses automatic template substitutions.
+
+* Ryuzine Rack is now enabled by default.  Control has been moved from Tools > Update tab to Options > Ryuzine Rack tab.
+
+* Ryuzine Rack stylesheet errors addressed.
+
+* “Featured Image” for Editions is now supported, however, it doesn’t offer the same level of control over how [ryucover] displays the image:
+
+	- “Featured Image” does not support cover “bleed” settings.  It is
+	  always included as a regular image, not a background image.
+
+	- If “Cover Image” is set to [ryucover] Ryuzine Reader always look 
+	  first for the short code, but if it doesn’t find one it will fall
+	  back to “Featured Image.”
+
+	- If “Cover Image” is set to “Featured Image” Ryuzine Reader will
+	  ignore any [ryucover] shortcode and always use “Featured Image.”
+
+	- Ryuzine Rack always looks for a [ryucover] shortcode first, if it
+	  doesn’t find one it will then look for a “Featured Image” and if
+	  it doesn’t find one it uses the “Image Not Available” placeholder.
+
+	- “Featured Image” and [ryucover] can be different images.
+
+	- Standard Ryuzine post archive (if Ryuzine Rack is disabled) will
+	  only use “Featured Image” (if attached) as Edition thumbnail.
+
+* Ryuzine List Widget updated to support “Featured Image” for cover.
+
+* Back-end now uses the WP 3.5+ Media Manager instead of the old “thickbox” one.
+
+* Custom Configuration can now be done per Edition, which over-rides default configuration under Ryuzine Press > Options tabbed pages (however not all the options are available under each Edition, just the ones you’re most likely to want to change).
+
+* Ryuzine Press > Options > Addons now uses drop-down lists to select webapp themes from those that are actually installed (prevents you from entering an invalid theme name). You can modify this list by adding/removing themes from the ~wp-content/plugins/ryuzine-press/ryuzine/theme folder (you will need to do so via FTP or your web host file manager).
+
+* Manga+Press Comic Plugin (v. 2.7.5) now fully supported
+
+* Fixed “failed to open stream” error on Tools page Plugin Details that occurred before web app was installed to the plugin.
+
+* Fixed grabbing of slug as post-type that prevented Issues column from appearing on posts management screen if Comic Easel slug had been changed from default “comic”
+
+
+Version 0.9.6.7 (Build 20140201.1)
+
+* This release fixes an integration problem with the Comic Easel plugin that prevented the "Ryuzine Issues" column from being added to the Comic Easel "All Comics" bulk edit post management screen, and then added two intances of the drop-down filter list.
+
+* Another incompatibility issue with Comic Easel was that Ryuzine Press automatically created a "Ryuzine Rack Category" taxonomy with the slug "comic," which is also the custom post-type used by Comic Easel.  Rather than force Comic Easel users to change the default post-type for their comics, Ryuzine Press now creates that taxonomy as "comic-book" (and changes it to that if you had already defined it).  This only automatically happens when the Ryuzine Press plugins is <em>activated</em>, otherwise you will have to manually edit the slug on the <em>Ryuzine Press &gt; Rack Categories</em> screen.
+
+* The minimum WordPress version supported by the plugin is now 3.5 and a compatibility check has now been added with an admin message if you are running something too old.
+
+* This version of Ryuzine Press was also tested with and is compatible with ComicPress 4.1
+
+* The plugin itself used to be a single file, which has been getting crazy long which was both bad for load times and maintenance.  That has been broken up into multiple files now with more attention paid to what NEEDS to load in a given context.
+
+
+Version 0.9.6.6 (Build 20140110.1)
+
+Ryuzine Press > Tools > Resources now has an info-box with a summary of the installation version and status.
+
+“Ryuzine Issues” replaces “Categories”
+This plugin no longer uses the regular Blog categories to organize what goes into each Edition.  A quick explanation of the difference between “Editions” and “Issues” :
+
+Ryuzine Issues - this is a hierarchical taxonomy just like the blog categories, but separate from it.  A blog post can belong to multiple issues.
+
+Ryuzine Press Editions - this is a type of blog post that includes one or more “Ryuzine Issues” within it.  Typically it should only be one issue per edition, but you could create an Edition that collects a number of issues (though it may exceed the browser cache limits on mobile devices and cause the browser to crash).
+
+This new taxonomy is added to the regular Posts and also Comic Easel (if activated).
+
+A new drop-down is added to Posts, Ryuzine Press Editions, and Comic Easel Comics admin management lists so you can FILTER by Ryuzine Press Edition.
+
+THERE IS A MIGRATION PLUGIN TO AUTOMATICALLY MOVE YOUR EXISTING EDITIONS TO THE NEW TAXONOMY: http://www.ryumaru.com/downloads/ryuzinepress/ryuzine-press-migrator.zip
+
+Ryuzine “Collections” - the previous plugin restricted each Edition to a posts from a single category.  The new plugin allows multiple Issues to be assigned to a single Ryuzine, forming a “Collection” of Issues.  Keep in mind, however, that this can potentially create very large publications that may take longer to load than most people are willing to wait, could have load times exceeding the standard 30 second server timeout (returning an error), and “Collections” can easily exceed the browser cache limits of mobile browsers on phones and tablets (which, by design, automatically crashes the browser on iOS devices).  So, yes, Collections are now possible.  With great volume comes great responsibility!
+
+The single-ryuzine.php file now only performs fewer database query loops, which (in testing) sped up load times by 3x on average.
+
+Better ComicPress & Comic Easel Integration
+
+Thanks to some help from the author of those great plugins Ryuzine Press now works even more seamlessly with them:
+
+No-Click Pages - in prior versions if you had “Click to Next” or the lightbox feature turned on in either ComicPress or Comic Easel all the comic pages in the Ryuzine Press Edition were also clickable, which was a usability nightmare on touch devices constantly mis-firing. The only fix before was to turn those features off, but that was a site-wide change.  Now Ryuzine Press grabs the comic image directly without any link wrapped around it.
+
+No ComicPress or ComicEasel Flash/Motion comics, galleries, or Lightboxes - these were never tested in Ryuzine Press and most likely wouldn’t work.  Ryuzine has it’s own built-in lightbox system, galleries would use jQuery that doesn’t load with Ryuzine, and Flash is a unsupported format on mobile devices Ryuzine targets.  Rather than have them display but not work properly they are now simply unsupported.
+
+The code hacks to Comic Easel should no longer be necessary.  The plugin attempts to handle it automatically, and now it uses a custom taxonomy instead of “categories” anyway.
+
+The ComicPress 2.x “Comic” column is no longer added to the Ryuzine Press Editions management list (it served no purpose there anyway other than taking up space).
+
+Auto-generated Cover Featured Links Fixed
+
+These used to be off by one page, which is now fixed.  They still use the regular Blog “Categories” to determine what is considered “Featured” - so if a post belongs to the current Ryuzine Issue and is also in the Featured category selected in the options it will be used as a auto-generated cover link.  In other words the “Featured” category is independent of the Issues taxonomy.
+
+NEW WIDGET - in previous versions if you wanted to show a list of Ryuzine Press Editions in your blog’s sidebar or footer you had to use a third-party plugin.  The one we were recommending is apparently no longer being developed.  So now Ryuzine Press has it’s own custom Widget for displaying a list of Editions.  It can also display a link to the Ryuzine Rack Newsstand (if you’ve installed it to the theme).
+
+NEW SHORTCODE - there is now a shortcode for embedding a Ryuzine URL in a post or page just like you embed videos from YouTube.  It also features a dialog box from which visitors can copy and paste an <IFRAME> embed themselves.  You can also use this to embed your Ryuzine Rack newsstand.  Just use format [ryuzine title=“Title of an Edition”] or [ryuzine url=“http://www.mysite.com/ryuzine/edition-slug/“ ] and that’s all you need!  However you can also set the size=“small|medium|large” or set the height and/or width in pixels or percentage.  Lastly, you can also embed the link so it automatically goes to a specific page with page=“n” where “n” is a page number.  Embedding Ryuzine Rack is as easy as [ryuzine title=“ryuzine-rack”] - neat huh?
+
+Mobile Banner Ad setting was apparently broken for a while, now fixed.
+
+Language Localization has been updated to take advantage of the newer, simpler language selector and offers more languages from which to choose (this had been changed in the stand-alone Ryuzine apps a while back and got overlooked in Ryuzine Press until now).
+
+RYUZINE RACK IMPROVEMENTS
+
+Media Categories now works properly and uses a custom “Rack Category” taxonomy.  You are also no longer limited to the six predefined categories.  Replacing the “Media Category” label edit boxes is now a drop-down list of all the Rack Categories from which you can pick a “default” one that will be assigned to a Ryuzine Press Edition when published (you can over-ride this on the Ryuzine Press Edition Post Edit screen).
+
+This same drop-down list also appears on the Tools > Rack Builder for each entry in your custom Rack Catalog.
+
+The aforementioned “Rack Categories” has its own section where you can edit and customize these non-hierarchical categories.  On the “All Editions” post management screen there is also a new column showing you what Rack Category each Edition is assigned to (if any) and a drop-down allowing you to filter by Rack Category.  These categories are only used by Ryuzine Rack.  If you aren’t using Ryuzine Rack you can just ignore them.
+
