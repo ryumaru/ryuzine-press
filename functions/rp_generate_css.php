@@ -13,9 +13,9 @@ function ryu_create_css($content,$id) {
 		return ; 
 	}
 	$cssFileName = "issue_".$id;
-	$cssFile = WP_PLUGIN_DIR.'/ryuzine-press/css/'.$cssFileName.'.css';
+	$cssFile = ryuzine_pluginfo('plugin_path').'css/'.$cssFileName.'.css';
 	// Find out if the directory is writable or not //
-	if (is_writable(WP_PLUGIN_DIR.'/ryuzine-press/css')) {
+	if (is_writable(ryuzine_pluginfo('plugin_path').'css')) {
 	 	// Strip out the in-page style tags if they are there //
  		$content = strip_tags($content);
 		$fh = fopen( $cssFile , 'w') or die("can't create file");

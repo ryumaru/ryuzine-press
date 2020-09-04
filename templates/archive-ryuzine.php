@@ -1,11 +1,11 @@
 <?php 
 /*
-Template Name: Comic Archive
+Template Name: Ryuzine Archive
 */	
-/* 	This is the Ryuzine Press Rack 1.0 template file 
+/* 	This is the Ryuzine Press Rack 1.1 template file 
 */
 
-/*  Copyright 2012-2015  K.M. Hansen  (email : software@ryumaru.com)
+/*  Copyright 2012-2020  K.M. Hansen  (email : software@ryumaru.com)
 
     Ryuzine Press plugin is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as 
@@ -483,7 +483,7 @@ RYU.php = {
 		}
 	}
 	?> 
-	<div id="social_widget"><?php if ( dynamic_sidebar( 'ryuzine-share' ) ) : else : endif; ?></div>
+	<div id="social_widget"><?php if ( dynamic_sidebar( 'ryuzinerack-share' ) ) : else : endif; ?></div>
 </div><!--// end of end matter //-->
 </div><!--// end of ryumask    //-->
 <div id="splash">
@@ -495,7 +495,7 @@ RYU.php = {
 	<p>Enable <span style="display:none;">both</span> to view as a web application.  Disable stylesheets to view as a plain web page. Then reload/refresh.</p>
 </noscript>
 </div>
-<p id="copyright" class="splash-fineprint">Ryuzine Copyright 2011,2012 K.M. Hansen &amp; Ryu Maru - All Rights Reserved</p>
+<p id="copyright" class="splash-fineprint">Ryuzine Copyright 2011-2020 K.M. Hansen &amp; Ryu Maru - All Rights Reserved</p>
 </div>
 </div>
 </body>

@@ -4,26 +4,26 @@ Ryuzine Press is a plugin for WordPress that “bridges” curated content from 
 
 ## Installation
 
-### For Non-Developers
+1. Download the Ryuzine Press plugin from the [GitHub Repository](https://github.com/ryumaru/ryuzine-press).
 
-1. Publishers (people who just want to USE the plugin and not contribute code to help develop it) should download the Ryuzine Press plugin from the [Ryu Maru website](http://www.ryumaru.com/downloads/ryuzinepress/ryuzine-press.zip).
-2. Un-zip the folder and upload it to your WordPress */wp-content/plugins*/ folder.
-3. From your WordPress Dashboard go to *Plugins > Installed Plugins* and find the "Ryuzine Press" plugin in the list and "activate" it.
-4. In your Dashboard you may want to go to *Ryuzine Press > Tools > Update Ryuzine* and check if there is an update for Ryuzine webapp (there is no automatic notice for webapp updates, you just have to periodically click the button to initiate a check).
-5. In your Dashboard go to *Ryuzine Press > Options* and set any default configuration options for your Ryuzine Press Editions (note: when you create a new Edition you also have the option of over-riding many settings on a per-edition basis).
+### Using Admin Upload
 
-### For Developers
+2. Go to your *Dashboard > Plugins > Add New* and press the "Upload Plugin" button at the top of the page.
+3. Browse to the ZIP file you downloaded from GitHub and select it and press the "Install Now" button.
 
-1. Developers who want to help improve the plugin can download the source and contribute code through the [GitHub repository](https://github.com/ryumaru/ryuzine-press).
-2. Un-Zip into your WordPress */wp-content/plugins/* folder
-3. From your WordPress Dashboard go to *Plugins > Installed Plugins* and find “Ryuzine Press” in the list and “activate” it.
-4. You will see a warning that the “Ryuzine webapp” is not installed.  In your Dashboard go to * Ryuzine Press > Tools* and select the “Update Ryuzine” tab.
-5. You should see a button inviting you to “Install” the webapp.  Click that and it will try to download, unzip, and install the webapp into the Ryuzine Press plugin.
-	a. If file, folder, or server permissions disallow this from working you will need to **manually** install the webapp by downloadin, unzipping, and uploading the "ryuzine" folder via FTP into the "ryuzine-press" plugin folder:
-		i. Download the [BUNDLED RELEASE](http://www.ryumaru.com/downloads/ryuzine/1.0/ryuzine.zip), which includes a number of Add-Ons and Themes or
-		ii. Download the [SOURCE RELEASE](https://github.com/ryumaru/ryuzine), which has only the minimal Add-Ons and Themes needed to function (you can also manually download and install more Add-Ons and Themes if you wish).  If you download the Source Release make sure you change the folder name from "ryuzine-master" to just "ryuzine" or it won't work.
-6. You may need to refresh the Tools page before the warning goes away.  There is no automatic update check for the webapp, you will need to periodically press the button to initiate a check, or follow @RyuMaruCo on Twitter or check the [Ryu Maru](http://www.ryumaru.com) website for announcements of new releases.
-7. In your Dashboard go to *Ryuzine Press > Options* and set any default configuration options for your Ryuzine Press Editions (note: when you create a new Edition you also have the option of over-riding many of these setting on a per-edition basis).
+### Using FTP
+
+2. Unzip the file you downloaded into a folder.
+3. Using your favorite FTP software upload that folder to your *~/wp-content/plugins/* folder.
+
+4. Go to your *Dashboard > Plugins > Installed Plugins* and activate the "Ryuzine Press" plugin.
+5. You will also need to install the Ryuzine Webapp as well.  Go to *Dashboard > Ryuzine Press > Tools > Update Ryuzine* to install it (it can't be bundled with Ryuzine Press for licensing reasons).
+6. Go to your *Dashboard > Ryuzine Press > Options* to set any default configuration for your Ryuzine publications.
+
+### Installation Issues
+
+* If Wordpress cannot download the Ryuzine Webapp you will need to go get it [directly](https://github.com/ryumaru/ryuzine), unzip it, make sure the folder is named "ryuzine" and FTP upload it to your site by placing it INSIDE of the Ryuzine Press Plugin folder.  If you cannot FTP to your site and it won't download you won't be able to use Ryuzine Press.
+
 
 ## License
 

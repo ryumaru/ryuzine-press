@@ -3,16 +3,14 @@
 Plugin Name: Ryuzine Press
 Plugin URI: http://www.ryumaru.com/products/ryuzine/ryuzine-press/
 Description: A WordPress plugin to bridge to the Ryuzine webapp.
-Version: 1.0
+Version: 1.1
 Author: K.M. Hansen
 Author URI: http://www.kmhcreative.com
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
-GitHub Plugin URI: https://github.com/ryumaru/ryuzine-press
-GitHub Branch: master
 */
 
-/*  Copyright 2012-2015  K.M. Hansen  (email : software@ryumaru.com)
+/*  Copyright 2012-2020  K.M. Hansen  (email : software@ryumaru.com)
 
     Ryuzine Press plugin is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as 
@@ -29,15 +27,17 @@ GitHub Branch: master
 
 */
 
-// Make sure they are using the minimum supported WP version first, if not then bail
-$wp_version = get_bloginfo('version');
-if ($wp_version < 3.5) {
-	global $pagenow;
-	if ( is_admin() && $pagenow=="plugins.php" ) {
-	echo "<div class='error'><p><b>ERROR:</b> Ryuzine Press is <em>activated</em> but requires <b>WordPress 3.5</b> or greater to work.  You are currently running <em>Wordpress <span style='color:red;'>".$wp_version."</span>,</em> please upgrade.</p></div>";
-	}
-	return;
-}
+/* Minimum Version Checks */
+	function rp_wp_version_check(){
+		// if not using minimum WP and PHP versions, bail!
+		$wp_version = get_bloginfo('version');
+		global $pagenow;
+		if ( is_admin() && $pagenow=="plugins.php" && ($wp_version < 3.5 || PHP_VERSION < 5.6 ) ) {
+		echo "<div class='notice notice-error is-dismissible'><p><b>ERROR:</b> Ryuzine Press is <em>activated</em> but requires <b>WordPress 3.5</b> and <b>PHP 5.6</b> or greater to work.  You are currently running <b>Wordpress <span style='color:red;'>".$wp_version."</span></b> and <b>PHP <span style='color:red;'>".PHP_VERSION."</span></b>. Please upgrade.</p></div>";
+			return;
+		}
+	};
+	add_action('admin_notices', 'rp_wp_version_check');
 
 // Ryuzine Plugin Info Function
 function ryuzine_pluginfo($whichinfo = null) {
@@ -57,7 +57,7 @@ function ryuzine_pluginfo($whichinfo = null) {
 				'plugin_url' => plugin_dir_url(__FILE__),
 				'plugin_path' => plugin_dir_path(__FILE__),
 				'plugin_basename' => plugin_basename(__FILE__),
-				'version' => '1.0'
+				'version' => '1.1'
 		);
 		// Combine em.
 		$ryuzine_pluginfo = array_merge($ryuzine_pluginfo, $ryuzine_addinfo);
@@ -159,7 +159,17 @@ function create_ryuzine_type() {
 			'rewrite' => array( 'slug' => 'rackcat' ) 
 		) 
 	);
-
+	// This should make sure we automatically have a Ryuzine category for Rack...
+	if (!term_exists('ryuzine','rackcats')) {
+		wp_insert_term(
+			'Ryuzine',	// Term Name
+			'rackcats', // Taxonomy
+			array(
+				'description' => 'Default media category',
+				'slug' => 'ryuzine'
+			)
+		);
+	};
 
 }
 
@@ -181,11 +191,9 @@ function ryuzine_activation()
 register_activation_hook( __FILE__, 'ryuzine_activation' );
 
 // Define default option settings
-function add_defaults_fn() {
-	$reset = get_option('ryu_default_options_db');	
- 	  if ( $reset===false || $reset=='1' ) {
-		delete_option('ryuzine_opt_covers');
-		$covers = array(
+function add_defaults_fn($reset = false) {
+	$options = array(	
+		'ryuzine_opt_covers' => array(
 		'autocover' => 0,
 		'headerfooter' => 'display:none;',
 		'mastheadtype' => 0,
@@ -198,10 +206,9 @@ function add_defaults_fn() {
 		'poweredby' => 0,
 		'app_logo' => '',
 		'app_icon' => ''
-		);
+		),
 		
-		delete_option('ryuzine_opt_pages');
-		$pages = array(
+		'ryuzine_opt_pages' => array(
 		'binding'  => 'left',
 		'pgsize'  => 0,
 		'wptheme2ryu' => 0,
@@ -218,10 +225,9 @@ function add_defaults_fn() {
 		'bmark1url' => 'http://www.ryumaru.com/forum/',
 		'bmark2' => 'Ryu Maru Website',
 		'bmark2url' => 'http://www.ryumaru.com'	
-		);
+		),
 		
-		delete_option('ryuzine_opt_addons');
-		$addons = array(
+		'ryuzine_opt_addons' => array(
 		'natlang' => 'en',
 		'localization' => 0,
 		'language' => 'en',
@@ -243,10 +249,9 @@ function add_defaults_fn() {
 		'iscroll' => 5,
 		'OVR' => 0,
 		'curves' => 0
-		);
+		),
 		
-		delete_option('ryuzine_opt_ads');
-		$ads = array(
+		'ryuzine_opt_ads' => array(
 		'splashad'  => 0,
 		'splashtype' => 0,
 		'splashoff' => 0,
@@ -262,10 +267,9 @@ function add_defaults_fn() {
 		'banneroff' => 0,
 		'bannercontent' => null,
 		'bannerlink' => ''		
-		);
+		),
 		
-		delete_option('ryuzine_opt_rack');
-		$mediaType = array(
+		'ryuzine_opt_rack' => array(
 			'racktitle' => 'Newsstand',
 			array('Ryuzine','Download','PDF','Print','Website'),
 			array('Read Now','Download ⬇','Download ⬇','$ Buy Now','View Site'),
@@ -274,24 +278,24 @@ function add_defaults_fn() {
 			'autopromo' => '5',
 			'maxpromos' => '5',
 			'linkopens' => '0',
-			'autocat'	=> '',
+			'autocat'	=> 'ryuzine',
 			'install'	=> '1'
-		);
+		),
 		
-		delete_option('ryuzine_rack_cat');
-		$rackcat = array(
+		'ryuzine_rack_cat' => array(
 			array(
 				array ('Catalog 1',0,''),
 				array (
 				'ID','Date','Title','Description','Category','URL','Type','Thumbnail','Promotion'
 				)
 			)
-		);
+		),
 		
-		delete_option('ryuzine_opt_lightbox');
-		$lightbox = array(
+		'ryuzine_opt_lightbox' => array(
 		'links' => '0'
-		);
+		),
+	);
+	if ( $reset === true) {
 		update_option('ryu_default_options_db', 0);		
 		update_option('ryu_admin_hide_text',0);
 		update_option('ryuzine_opt_covers', $covers);
@@ -301,7 +305,21 @@ function add_defaults_fn() {
 		update_option('ryuzine_opt_rack', $mediaType);
 		update_option('ryuzine_rack_cat', $rackcat);
 		update_option('ryuzine_opt_lightbox', $lightbox);
-	}
+	};
+	
+	  	foreach ($options as $section => $settings) {
+			$dbcheck = get_option($section);	// get section from database
+			foreach ($settings as $key => &$value) {	// & passes as reference
+				if (isset($dbcheck[$key])) {	// if option is set
+					if ($dbcheck[$key] != $value) {	// if value is not default
+						$value = $dbcheck[$key];	// update value to cutom setting
+					}
+				} else {
+					// option is not set, use default
+				}
+			}
+			update_option($section,$settings);
+		}
 }
 // Add Database Fields If Needed //
 register_activation_hook(__FILE__, 'add_defaults_fn');
@@ -385,10 +403,11 @@ register_activation_hook(__FILE__, 'fix_vars_on_activate');
 			@require('functions/rp_posts_management.php');
 			@require('functions/rp_publish_post.php');
 			@require('plugin-update-checker/plugin-update-checker.php');
-		$RyuzinePressUpdateChecker = PucFactory::buildUpdateChecker(
-		'http://www.ryumaru.com/downloads/wp-plugins/?action=get_metadata&slug=ryuzine-press',
+		$RyuzinePressUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
+		'https://github.com/ryumaru/ryuzine-press',
 			__FILE__,'ryuzine-press'
 		);
+		$RyuzinePressUpdateChecker->getVcsApi()->enableReleaseAssets();
 	}
 
 function ryuzine_remove_old_templates() {
@@ -401,7 +420,7 @@ register_activation_hook(__FILE__, 'ryuzine_remove_old_templates');
 // Set up the templates
 	function ryu_single_page($template) {
 		if (is_singular('ryuzine')) {
-			load_template(WP_PLUGIN_DIR.'/ryuzine-press/templates/single-ryuzine.php');
+			load_template(ryuzine_pluginfo('plugin_path').'templates/single-ryuzine.php');
 		} else { 
 			return $template; 
 		}
@@ -410,7 +429,7 @@ register_activation_hook(__FILE__, 'ryuzine_remove_old_templates');
 	function ryu_archive_page($template) {
 		$rack_install = get_option('ryuzine_opt_rack');
 		if (is_post_type_archive('ryuzine') && $rack_install['install'] == '1') {
-			load_template(WP_PLUGIN_DIR.'/ryuzine-press/templates/archive-ryuzine.php');
+			load_template(ryuzine_pluginfo('plugin_path').'templates/archive-ryuzine.php');
 		} else { 
 			return $template; 
 		}
@@ -427,7 +446,7 @@ register_activation_hook(__FILE__, 'ryuzine_remove_old_templates');
 //	&& 
 //	$_GET['post_type'] == "ryuzine" 
 	) ) ) {
-		if (!file_exists(WP_PLUGIN_DIR.'/ryuzine-press/ryuzine/js/ryuzine.js')) {
+		if (!file_exists(ryuzine_pluginfo('plugin_path').'ryuzine/js/ryuzine.js')) {
 		add_action('admin_notices', 'ryu_install_app_notice');
 		};
 	}

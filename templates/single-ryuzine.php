@@ -1,8 +1,8 @@
 <?php 	
-/* This is the Ryuzine Press 1.0 template file
+/* This is the Ryuzine Press 1.1 template file
 */
 
-/*  Copyright 2012-2015  K.M. Hansen  (email : software@ryumaru.com)
+/*  Copyright 2012-2020  K.M. Hansen  (email : software@ryumaru.com)
 
     Ryuzine Press plugin is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as 
@@ -18,6 +18,11 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 */
+
+// we DON'T want notes at the bottom of every page so remove them...
+remove_filter('the_content', 'insertRyuzineNote');
+// we don't want to hide posts from this loop
+remove_filter('pre_get_posts', 'hide_posts_in_editions');
 
 		$issues = get_the_terms($post->ID,'issues');
 		$ryupress = plugins_url()."/ryuzine-press/";
@@ -126,6 +131,17 @@ function in_ryuzine_rack_promo( $atts, $content = null) {
 }
 add_shortcode('ryupromo','in_ryuzine_rack_promo');
 
+/* 	Reply-to links in comments don't work because jQuery script
+	that moves the comment form is not enqueued in a Ryuzine so
+	we'll just remove it rather than have a link that doesn't work.
+*/
+function remove_reply_link($link, $args, $comment){
+	$comment = get_comment($comment);
+	$link = '';
+	return $link;
+}
+add_filter('comment_reply_link', 'remove_reply_link', 10, 3);
+
 /* Make App Icons On the Fly */
 if ($options_cover['app_icon'] != '') {
 	$icon = $options_cover['app_icon'];
@@ -153,6 +169,46 @@ if ($options_cover['app_icon'] != '') {
 <link rel="apple-touch-icon-precomposed" sizes="114x114" href="<?php echo $retina_icon; ?>" />
 <link rel="apple-touch-icon-precomposed" sizes="72x72" href="<?php echo $ipad_icon; ?>" />
 <link rel="apple-touch-icon-precomposed" href="<?php echo $iphone_icon; ?>" />
+
+<meta name="author" content="<?php 
+	// use author first and last name or nice name
+	$author_id = $post->post_author;
+	if ( is_object( get_userdata($author_id) ) ) { // prev Ryuzine post type did not support author
+		$first = get_userdata($author_id)->first_name;
+		$last  = get_userdata($author_id)->last_name;
+		$author = $first." ".$last;
+		if ( trim($author) == '') {
+		$author = the_author_meta( 'user_nicename',$author_id);
+		};
+		echo $author;
+	}
+	?>" />
+<meta name="description" content="<?php 
+			// prevent summary from containing shortcodes or HTML tags:
+			if ( has_excerpt( $post->ID ) ) {
+   				echo strip_shortcodes(get_the_excerpt());
+			} else {
+				$desc = wp_strip_all_tags( strip_shortcodes(get_the_content()) );
+				$desc = preg_replace( '/(^|[^\n\r])[\r\n](?![\n\r])/', '$1 ', $desc );
+				$desc = substr($desc,0,155); // trim to 155 character limit
+   				echo $desc;
+		} ?>" />
+<meta name="copyright" content="©<?php echo date("Y", strtotime($post->post_date)).' '.get_bloginfo( 'name' ); ?>" />
+<meta name="keywords" content="<?php 
+$posttags = get_the_tags();
+if ($posttags) {
+  foreach($posttags as $tag) {
+  	$sep = ',';
+  	if ($tag == end($posttags)) {
+  		$sep = '';
+  	}
+    echo $tag->name . $sep; 
+  }
+} ?>" />
+<meta name="generator" content="Ryuzine Press 1.5" />
+<link rel="bookmark" href="<?php the_permalink(); ?>" />
+
+
 <?php if ($options_page['wptheme2ryu']== '1') { ?>
 <link rel="stylesheet" type="text/css" href="<?php echo get_stylesheet_uri(); ?>" />
 <?php } ?>
@@ -168,7 +224,7 @@ if ($defaultTheme != '' && $defaultTheme != null) {
  	$stylesheet = get_post_meta($post->ID,'_ryustyles',TRUE);
  	// If it exists, use external stylesheet //
  	// if not styles will be written in page //
- 	$cssFileName = ryu_check_CSS($stylesheet,$config);
+ 	ryu_check_CSS($stylesheet,$config);
  ?>
 <link rel="stylesheet" type="text/css" href="<?php echo $ryupress; ?>ryuzine/css/blank.css" id="colortext" />
 <title><?php if ($options_cover['mastheadtext'] != '') { echo $options_cover['mastheadtext'].' - ';the_title(); } else { bloginfo('name').' - ';the_title();;} ?></title>
@@ -591,7 +647,7 @@ if ( $comments == "1") {
 				<p>Enable <span style="display:none;">both</span> to view as a web application.  Disable stylesheets to view as a plain web page. Then reload/refresh.</p>
 			</noscript>
 		</div>
-		<p class="splash-fineprint">Ryuzine Copyright 2011,2012 K.M. Hansen &amp; Ryu Maru - All Rights Reserved</p>
+		<p class="splash-fineprint">Ryuzine Copyright 2011-2020 K.M. Hansen &amp; Ryu Maru - All Rights Reserved</p>
 	</div>
 </div>
 </body>

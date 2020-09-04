@@ -8,7 +8,7 @@
 // Check for CSS File from within Ryuzine //
 function ryu_check_CSS($content,$config = false) {
 	$cssFileName = "issue_".get_the_ID();
-	$cssFile = WP_PLUGIN_DIR.'/ryuzine-press/css/'.$cssFileName.'.css';
+	$cssFile = ryuzine_pluginfo('plugin_path').'css/'.$cssFileName.'.css';
 	$options_cover = get_option('ryuzine_opt_covers');
 	if ($config) { 
 		$headerfooter = $config['headerfooter'];
@@ -31,14 +31,14 @@ function ryu_check_CSS($content,$config = false) {
 	}
 	// See if the issue-specific stylesheet exists //
 	if (file_exists($cssFile)) {
-		echo '<link rel="stylesheet" type="text/css" href="'.plugins_url().'/ryuzine-press/css/'.$cssFileName.'.css" id="this_issue" />';
+		echo '<link rel="stylesheet" type="text/css" href="'.ryuzine_pluginfo('plugin_url').'css/'.$cssFileName.'.css" id="this_issue" />';
 		if ($header_footer != '') {
 			echo "<style type='text/css'>\n".$header_footer."\n</style>";
 		}
 	} else {
 		// We have to just write the into the page //
 		$cssFileName = "thisissue";
-		echo '<link rel="stylesheet" type="text/css" href="'.plugins_url().'/ryuzine-press/css/thisissue.css" id="this_issue" />';
+		echo '<link rel="stylesheet" type="text/css" href="'.ryuzine_pluginfo('plugin_url').'css/thisissue.css" id="this_issue" />';
 		echo "<style type='text/css'>\n".$content."\n".$header_footer."\n</style>";
 	}
 	return $cssFileName;
@@ -47,7 +47,7 @@ function ryu_check_CSS($content,$config = false) {
 // If Ryuzine Rack is installed over-ride Settings > Reading > Blog pages show at most X //
 
 function ryuzine_archive_pagesize( $query ) {
-	if (file_exists(STYLESHEETPATH.'/archive-ryuzine.php')) {	
+	if (file_exists(get_stylesheet_directory().'/archive-ryuzine.php')) {	
 		if ( is_admin() || ! $query->is_main_query() )
 			return;
 		if ( is_post_type_archive( 'ryuzine' ) ) {
@@ -161,17 +161,19 @@ function ryuzine_embed_in_page($atts, $content = null) {
 		if ($size == 'large') { $height = 768; $width = 1024; }
 		elseif ($size == 'medium') { $height = 640; $width = 480; }
 		else { $height = 480; $width = 320; };
+	} else {
+		$height = 480; $width = 320;
 	}
 	if (!preg_match("/%/i", $width)) { $divwide = $width . 'px'; } else { $divwide = $width;};
 	if (!$style) { $style = "border:1px solid black;"; }
 
 	if ($url && $url != '') {
-		if ($url == get_permalink( url_to_postid( $url ) ) && get_post_type( url_to_postid( $url) ) == 'ryuzine' ) {
-			// pass $url through, it is a valid ryuzine on this site
+		if ( $url == get_permalink( url_to_postid( $url ) ) && get_post_type( url_to_postid( $url) ) == 'ryuzine') {
+			// pass $url through, it is a valid ryuzine on this site or offsite override is used
 		} else {
 			$url = ''; // some other kind of post, block it
 		}
-	} else {
+	} else { 
 		if ($title != '' && strtolower($title) != 'ryuzine-rack' ) {
 			if (get_page_by_title($title, OBJECT, 'ryuzine') ) {
 				$url = esc_url( get_permalink( get_page_by_title($title, OBJECT, 'ryuzine') ) );
@@ -179,7 +181,7 @@ function ryuzine_embed_in_page($atts, $content = null) {
 				$url = '';
 			}
 		} elseif ( strtolower($title) == 'ryuzine-rack' ) {
-			if (file_exists(STYLESHEETPATH.'/archive-ryuzine.php')) {
+			if (file_exists(ryuzine_pluginfo('plugin_path').'templates/archive-ryuzine.php')) {
 				$url = esc_url( get_post_type_archive_link( 'ryuzine' ) );
 			} else {
 				$url = '';
@@ -187,7 +189,7 @@ function ryuzine_embed_in_page($atts, $content = null) {
 		} else {
 			$url = '';
 		}
-	}
+	} 
 	if ($page && $url != '') { $url = $url . '#' . $page; }
 	if ($url != '') { ?>
 		<div id="ryuzine_embed_<?php echo $i; ?>" class="ryuzine_embed" style="display:table;width:<?php echo $divwide; ?>;margin:10px auto;">
@@ -247,10 +249,7 @@ function ryuzine_embed_in_page($atts, $content = null) {
 			</script>
 		</div>
 <?php
-	} else {	// nothing to embed!
-		$embed = '';
-	}
-	return $embed;
+	};
 }
 add_shortcode('ryuzine','ryuzine_embed_in_page');
 ?>

@@ -33,6 +33,8 @@ class ryuzine_list_widget extends WP_Widget {
 	}	
 	
 	function widget($args, $instance) {
+		// make sure list widget can still show posts
+		remove_filter('pre_get_posts', 'hide_posts_in_editions');
 		global $post, $wp_query;
 		extract($args);
 		if (!is_home() && $instance['onlyhome']) return;
@@ -128,17 +130,17 @@ class ryuzine_list_widget extends WP_Widget {
 	
 	function update($new_instance, $old_instance) {
 		$instance = $old_instance;
-		$instance['title'] = strip_tags($new_instance['title']);
-		$instance['hidecontent'] = (bool)( $new_instance['hidecontent'] == 1 ? true : false );
-		$instance['onlyhome'] = (bool)( $new_instance['onlyhome'] == 1 ? true : false );
-		$instance['listsize'] = strip_tags($new_instance['listsize']);
-		$instance['ascending'] = (bool)( $new_instance['ascending'] == 1 ? true : false );
-		$instance['coverthumbs'] = $new_instance['coverthumbs'];
-		$instance['restrict'] = (bool)( $new_instance['restrict'] == 1 ? true : false );
-		$instance['coversize'] = strip_tags($new_instance['coversize']);
-		$instance['coverhw'] = (bool)( $new_instance['coverhw'] == 1 ? true : false );
-		$instance['racktitle'] = strip_tags($new_instance['racktitle']);
-		$instance['showrack'] = (bool)($new_instance['showrack'] == 1 ? true : false );
+		$instance['title'] = (!empty($new_instance['title'])) ? strip_tags($new_instance['title']) : '';
+		$instance['hidecontent'] = (!empty($new_instance['hidecontent'])) ? (bool)( $new_instance['hidecontent'] == 1 ? true : false ) : false;
+		$instance['onlyhome'] = (!empty($new_instance['onlyhome'])) ? (bool)( $new_instance['onlyhome'] == 1 ? true : false ) : false;
+		$instance['listsize'] = (!empty($new_instance['listsize'])) ? strip_tags($new_instance['listsize']) : '-1';
+		$instance['ascending'] = (!empty($new_instance['ascending'])) ? (bool)( $new_instance['ascending'] == 1 ? true : false ) : true;
+		$instance['coverthumbs'] = (!empty($new_instance['coverthumbs'])) ? $new_instance['coverthumbs'] : '0';
+		$instance['restrict'] = (!empty($new_instance['restrict'])) ? (bool)( $new_instance['restrict'] == 1 ? true : false ) : false ;
+		$instance['coversize'] = (!empty($new_instance['coversize'])) ? strip_tags($new_instance['coversize']) : '125';
+		$instance['coverhw'] = (!empty($new_instance['coverhw'])) ? (bool)( $new_instance['coverhw'] == 1 ? true : false ) : false;
+		$instance['racktitle'] = (!empty($new_instance['racktitle'])) ? strip_tags($new_instance['racktitle']) : '';
+		$instance['showrack'] = (!empty($new_instance['showrack'])) ? (bool)($new_instance['showrack'] == 1 ? true : false ) : false;
 		return $instance;
 	}
 	

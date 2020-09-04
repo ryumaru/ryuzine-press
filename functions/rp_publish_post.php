@@ -189,35 +189,6 @@ add_action('manage_ryuzine_posts_custom_column', 'manage_ryuzine_columns', 10, 2
 		wp_nonce_field( 'ryuzine'.$post->ID, 'ryu_thank_noncename');
 		wp_editor( $ryu_thank, 'ryu_thank', array('textarea_rows'=>'5'));
 	}
-
-/*
-	function ryu_hello_metabox($post) {
-		$ryu_hello = get_post_meta($post->ID, '_ryuhello', TRUE);
-		if (!$ryu_hello) $ryu_hello = ''; 	 
-		wp_nonce_field( 'ryuzine'.$post->ID, 'ryu_hello_noncename');?>
-<div class="editor-toolbar">
-    <a id="edButtonPreview1" class="edButtonPreview" onclick="toggleEditor(1,'html');" >HTML</a>
-    <a id="edButtonHTML1" class="edButtonHTML active" onclick="toggleEditor(1,'visual');">Visual</a>
-</div>
-		<div class="customEditor" style="margin:0 0 25px 0; border:1px solid #ccc;background:#fff;">	
-		<textarea name="ryu_hello" cols="40" rows="5" style="margin:0;border:0;width:100%;background:#fff;"><?php echo $ryu_hello; ?></textarea>
-		</div>
-<?php
-	}
-
-	
-	function ryu_thank_metabox($post) {
-		$ryu_thank = get_post_meta($post->ID, '_ryuthank', TRUE);
-		if (!$ryu_thank) $ryu_thank = ''; 	 
-		wp_nonce_field( 'ryuzine'.$post->ID, 'ryu_thank_noncename');?>
-<div class="editor-toolbar">
-    <a id="edButtonPreview2" class="edButtonPreview" onclick="toggleEditor(2,'html');" >HTML</a>
-    <a id="edButtonHTML2" class="edButtonHTML active" onclick="toggleEditor(2,'visual');">Visual</a>
-</div>
-		<div class="customEditor" style="margin:0 0 25px 0; border:1px solid #ccc;background:#fff;"><textarea name="ryu_thank" cols="40" rows="5" style="margin:0;border:0;width:100%;background:#fff;"><?php echo $ryu_thank; ?></textarea></div>
-<?php
-	}
-*/
 	function ryu_styles_metabox($post) {
 		$ryu_styles = get_post_meta($post->ID, '_ryustyles', TRUE);
 		if (!$ryu_styles) $ryu_styles = ''; 	 
@@ -645,10 +616,10 @@ function ryu_styles_error() {
 		<td>
 <?php
 // GET LIST OF INSTALLED ADD-ONS
-$themes = glob(WP_PLUGIN_DIR.'/ryuzine-press/ryuzine/theme/*' , GLOB_ONLYDIR);
+$themes = glob(ryuzine_pluginfo('plugin_path').'ryuzine/theme/*' , GLOB_ONLYDIR);
 // strip out relative path
 for ($t=0;$t<count($themes);$t++) {
-	$themes[$t] = preg_replace("~".WP_PLUGIN_DIR."/ryuzine-press/ryuzine/theme/~", "", $themes[$t] );
+	$themes[$t] = preg_replace("~".ryuzine_pluginfo('plugin_path')."ryuzine/theme/~", "", $themes[$t] );
 } ?>
 <select name="ryuzine_opt_addons_defaultTheme">
 	<option value="">None</option>

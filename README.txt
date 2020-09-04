@@ -4,8 +4,8 @@ Plugin URI: http://www.ryumaru.com/downloads/packages/
 Contributors: offworld
 Tags: Issue, Issue Manager, Editions, Magazine, Webcomics
 Requires at least: 3.5
-Tested up to: 4.2.3
-Stable Tag: 1.0
+Tested up to: 5.4.2
+Stable Tag: 1.1
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -27,26 +27,27 @@ Distribution of publications in Ryuzine format does not require you to also prov
 
 == Installation ==
 
-= For Non-Developers =
+= Using Admin Upload =
 
-1. Publishers (people who just want to USE the plugin and not contribute code to help develop it) should download the Ryuzine Press plugin from the [Ryu Maru website](http://www.ryumaru.com/downloads/ryuzinepress/ryuzine-press.zip).
-2. Un-zip the folder and upload it to your WordPress */wp-content/plugins*/ folder.
-3. From your WordPress Dashboard go to *Plugins > Installed Plugins* and find the "Ryuzine Press" plugin in the list and "activate" it.
-4. In your Dashboard you may want to go to *Ryuzine Press > Tools > Update Ryuzine* and check if there is an update for Ryuzine webapp (there is no automatic notice for webapp updates, you just have to periodically click the button to initiate a check).
-5. In your Dashboard go to *Ryuzine Press > Options* and set any default configuration options for your Ryuzine Press Editions (note: when you create a new Edition you also have the option of over-riding many settings on a per-edition basis).
+1. Download the Ryuzine Press plugin from the [GitHub Repository](https://github.com/ryumaru/ryuzine-press).
 
-= For Developers =
+= Using Admin Upload =
 
-1. Developers who want to help improve the plugin can download the source and contribute code through the [GitHub repository](https://github.com/ryumaru/ryuzine-press).
-2. Un-Zip into your WordPress */wp-content/plugins/* folder
-3. From your WordPress Dashboard go to *Plugins > Installed Plugins* and find “Ryuzine Press” in the list and “activate” it.
-4. You will see a warning that the “Ryuzine webapp” is not installed.  In your Dashboard go to * Ryuzine Press > Tools* and select the “Update Ryuzine” tab.
-5. You should see a button inviting you to “Install” the webapp.  Click that and it will try to download, unzip, and install the webapp into the Ryuzine Press plugin.
-	a. If file, folder, or server permissions disallow this from working you will need to **manually** install the webapp by downloadin, unzipping, and uploading the "ryuzine" folder via FTP into the "ryuzine-press" plugin folder:
-		i. Download the [BUNDLED RELEASE](http://www.ryumaru.com/downloads/ryuzine/1.0/ryuzine.zip), which includes a number of Add-Ons and Themes or
-		ii. Download the [SOURCE RELEASE](https://github.com/ryumaru/ryuzine), which has only the minimal Add-Ons and Themes needed to function (you can also manually download and install more Add-Ons and Themes if you wish).  If you download the Source Release make sure you change the folder name from "ryuzine-master" to just "ryuzine" or it won't work.
-6. You may need to refresh the Tools page before the warning goes away.  There is no automatic update check for the webapp, you will need to periodically press the button to initiate a check, or follow @RyuMaruCo on Twitter or check the [Ryu Maru](http://www.ryumaru.com) website for announcements of new releases.
-7. In your Dashboard go to *Ryuzine Press > Options* and set any default configuration options for your Ryuzine Press Editions (note: when you create a new Edition you also have the option of over-riding many of these setting on a per-edition basis).
+2. Go to your *Dashboard > Plugins > Add New* and press the "Upload Plugin" button at the top of the page.
+3. Browse to the ZIP file you downloaded from GitHub and select it and press the "Install Now" button.
+
+= Using FTP =
+
+2. Unzip the file you downloaded into a folder.
+3. Using your favorite FTP software upload that folder to your *~/wp-content/plugins/* folder.
+
+4. Go to your *Dashboard > Plugins > Installed Plugins* and activate the "Ryuzine Press" plugin.
+5. You will also need to install the Ryuzine Webapp as well.  Go to *Dashboard > Ryuzine Press > Tools > Update Ryuzine* to install it (it can't be bundled with Ryuzine Press for licensing reasons).
+6. Go to your *Dashboard > Ryuzine Press > Options* to set any default configuration for your Ryuzine publications.
+
+= Installation Issues =
+
+* If Wordpress cannot download the Ryuzine Webapp you will need to go get it [directly](https://github.com/ryumaru/ryuzine), unzip it, make sure the folder is named "ryuzine" and FTP upload it to your site by placing it INSIDE of the Ryuzine Press Plugin folder.  If you cannot FTP to your site and it won't download you won't be able to use Ryuzine Press.
 
 == Frequently Asked Questions ==
 
@@ -80,6 +81,35 @@ A. Technically yes, if any of the posts included in the Edition have another Edi
 
 
 == Changelog ==
+
+= 1.1 =
+* Requires PHP 5.6 or later (tested up to PHP 7.4.8)
+* Version check updated to also check PHP
+* Version check no longer produces unexpected characters on activation.
+* Activation now auto updates database with new options.
+* Plugin now updates from GitHub releases using WP update system.
+* Plugin Update Checker updated to version 4.10
+* Options sanitization fixed
+* Fixed "undefined index" error in Rack Builder
+* Replaced deprecated STYLESHEETPATH constant with WP "get" function.
+* Auto-creates "Ryuzine" Rack Category.  If you delete it the category is automatically restored on page reload.  This is to prevent undefined array offset PHP errors if no default category is defined.
+* Fixed widget undefined index errors.
+* Options Page
+	* Reset to Defaults checkbox replaced with button method
+	* Default Rack Category is now auto-populated with "Ryuzine" type.
+	* Fixed issue where "localization" setting was stuck on zero (off).
+	* Fixed issue where admin script caused unknown index PHP error on Ads tab.
+* Tools Page
+	* Fixed issue where "Check for Updates" button would not turn into
+	  "Install Ryuzine Webapp" button if version check found an update.
+	* Updated version check and update to pull from GitHub releases
+	  and automatically delete previous Webapp installation.
+* Changes to Templates
+	* single-ryuzine.php
+		* Added filter to remove notes at bottom of every page.
+		* Added filter to prevent posts being hidden from loop
+	* archive-ryuzine.php separate Share Bubble sidebar code added.
+ 
 
 = 1.0 =
 * App Icons are now automatically generated from one image (you no longer need multiple images already at the icon dimensions)

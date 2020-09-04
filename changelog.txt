@@ -1,5 +1,23 @@
 RYUZINE PRESS CHANGELOG
 
+Version 1.1
+* Requires PHP 5.3 or later (tested up to PHP 7.4.8)
+* Plugin now updates from GitHub releases using WP update system.
+* Options sanitization fixed
+* Fixed "undefined index" error in Rack Builder
+* Replaced deprecated STYLESHEETPATH constant with WP "get" function.
+* Added Ryuzine Rack Share Bubble to Widgets section, because many widgets only work on posts and pages and Rack is an Archive page.
+* Tools Page
+	* Fixed issue where "Check for Updates" button would not turn into
+	  "Install Ryuzine Webapp" button if version check found an update.
+	* Updated version check and update to pull from GitHub releases
+	  and automatically delete previous Webapp installation.
+* Changes to Templates
+	* single-ryuzine.php
+		* Added filter to remove notes at bottom of every page.
+		* Added filter to prevent posts being hidden from loop
+	* archive-ryuzine.php separate Share Bubble sidebar code added.
+
 Version 1.0
 * App Icons 
 	* Are now automatically generated from one image with Aqua Resizer

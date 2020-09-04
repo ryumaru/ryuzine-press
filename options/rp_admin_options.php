@@ -12,7 +12,6 @@ add_action('admin_menu', 'ryuzine_options_add_page');
 
 // Init plugin options to white list our options
 function ryuzine_options_init(){
-	register_setting( 'ryu_default_options_db','ryu_default_options_db','ryuzine_options_validate' );
 	register_setting( 'ryuzine_opt_covers', 'ryuzine_opt_covers', 'ryuzine_options_validate' );
 	register_setting( 'ryuzine_opt_pages', 'ryuzine_opt_pages', 'ryuzine_options_validate' );
 	register_setting( 'ryuzine_opt_addons', 'ryuzine_opt_addons', 'ryuzine_options_validate' );
@@ -674,15 +673,15 @@ if ($pagenow=="edit.php" && $_GET['post_type'] == "ryuzine" && isset( $_GET['pag
 		order you select them.</p>
 <?php
 // GET LIST OF INSTALLED ADD-ONS
-$addons = glob(WP_PLUGIN_DIR.'/ryuzine-press/ryuzine/addons/*' , GLOB_ONLYDIR);
+$addons = glob(ryuzine_pluginfo('plugin_path').'ryuzine/addons/*' , GLOB_ONLYDIR);
 // strip out relative path
 $nfo = array();
 for ($a=0;$a<count($addons);$a++) {
-	$addons[$a] = preg_replace("~".WP_PLUGIN_DIR."/ryuzine-press/ryuzine/addons/~", "", $addons[$a] );
+	$addons[$a] = preg_replace("~".ryuzine_pluginfo('plugin_path')."ryuzine/addons/~", "", $addons[$a] );
 	$fileinfo = array();
-	if (file_exists(WP_PLUGIN_DIR.'/ryuzine-press/ryuzine/addons/'.$addons[$a].'/'.$addons[$a].'.config.js')) {
+	if (file_exists(ryuzine_pluginfo('plugin_path').'ryuzine/addons/'.$addons[$a].'/'.$addons[$a].'.config.js')) {
 		$exists = true;
-		$file = new SplFileObject(WP_PLUGIN_DIR.'/ryuzine-press/ryuzine/addons/'.$addons[$a].'/'.$addons[$a].'.config.js');
+		$file = new SplFileObject(ryuzine_pluginfo('plugin_path').'ryuzine/addons/'.$addons[$a].'/'.$addons[$a].'.config.js');
 		$fileIterator = new LimitIterator($file, 1, 6);
 		foreach($fileIterator as $line) {
 			$line = preg_replace("/\'|\"|,/",'',$line);
@@ -795,6 +794,7 @@ function add_selected(value) {
 	}
 	document.getElementById('ryuzine_opt_addons[selected_addons]').value = selected_addons;
 	document.getElementById('load_order').innerHTML = '<strong>Add-On Load Order:</strong> '+selected_addons.toString().replace(/,/gi,', ');
+	update_localization();
 }
 function cut_selected(value) {
 	if (selected_addons.indexOf(''+value+'')!=-1) {
@@ -802,8 +802,17 @@ function cut_selected(value) {
 	}
 	document.getElementById('ryuzine_opt_addons[selected_addons]').value = selected_addons;
 	document.getElementById('load_order').innerHTML = '<strong>Add-On Load Order:</strong> '+selected_addons.toString().replace(/,/gi,', ');
+	update_localization();
 }
-</script>		
+function update_localization() {
+	if (selected_addons.indexOf('localize') !== -1) {
+		document.getElementById("ryuzine_opt_addons[localization]").value = 1;
+	} else {
+		document.getElementById("ryuzine_opt_addons[localization]").value = 0;
+	}
+}
+</script>
+<input name="ryuzine_opt_addons[localization]" id="ryuzine_opt_addons[localization]" type="hidden" value="<?php echo $options['localization']; ?>" />		
 		<h3>Ryuzine Theme Settings</h3>
 		<p>Ryuzine themes change the appearance of the webapp User Interface.  You can also send different themes to different 
 		platforms (for example to give your publication a "native app" appearance). These themes are completely separate from your WordPress theme. All themes must be installed in:<em><?php echo plugin_dir_path( dirname( __FILE__ )); ?>ryuzine/theme/</em></p> 
@@ -822,10 +831,10 @@ function cut_selected(value) {
 		<td>
 <?php
 // GET LIST OF INSTALLED THEMES
-$themes = glob(WP_PLUGIN_DIR.'/ryuzine-press/ryuzine/theme/*' , GLOB_ONLYDIR);
+$themes = glob(ryuzine_pluginfo('plugin_path').'ryuzine/theme/*' , GLOB_ONLYDIR);
 // strip out relative path
 for ($t=0;$t<count($themes);$t++) {
-	$themes[$t] = preg_replace("~".WP_PLUGIN_DIR."/ryuzine-press/ryuzine/theme/~", "", $themes[$t] );
+	$themes[$t] = preg_replace("~".ryuzine_pluginfo('plugin_path')."ryuzine/theme/~", "", $themes[$t] );
 } ?>
 <select name="ryuzine_opt_addons[defaultTheme]">
 	<option value="">None</option>
@@ -994,7 +1003,7 @@ for ($pf=0; $pf<count($platforms);$pf++) {
 		</table>
 			<script type="text/javascript">
 				var splashtype = <?php echo $options['splashtype']; ?>;
-				var splashoff = <?php echo $options['splashoff']; ?>;
+				var splashoff = <?php if(isset($options['splashoff'])){ echo $options['splashoff'];}else{ echo "0";}; ?>;
 				if (splashtype == "1" ) {
 					document.getElementById('splash_image').className = "text_area";
 					document.getElementById('splash_image_button').style.display = "none";
@@ -1277,14 +1286,25 @@ for ($pf=0; $pf<count($platforms);$pf++) {
 	<p class="submit"><input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" /></p></td>
 	</form>
 	<td  style="text-align:right;">
-	<form method="post" action="options.php">
-	<?php settings_fields('ryu_default_options_db'); ?>
-	<p style="text-align:right;">	Reset to defaults on deactivation/activation: <input onchange="this.form.submit();" name="ryu_default_options_db" type="checkbox" value="1" <?php checked( '1', get_option( 'ryu_default_options_db' ) ); ?> /></p>
-	</form>
+	<form id="rp_reset" method="post" action="">
+        <?php wp_nonce_field('rp_reset','rp_reset_nonce'); ?>
+        <input type="hidden" name="ryuzine_reset" value="1" />
+        <input type="button" type="submit" name="resetbutton" class="reset button secondary-button" value="Reset to defaults" style="float:right;" />
+        <div style="clear:both;"></div>
+        </form> 
 	</td>
 	</tr></table>
 </div>
 </div>
+<script type="text/javascript">
+	jQuery(document).ready(function($){
+		$( '#rp_reset input.reset' ).on( 'click', function(){
+			if ( confirm("ARE YOU SURE?  Resetting ALL the Ryuzine Press settings CANNOT BE UNDONE!" ) ){
+				$('#rp_reset').submit();
+			}
+		} );
+	});
+</script>
 
 	<?php	
 }

@@ -76,7 +76,9 @@ function ryuzine_tools_page() { ?>
 				for ($r=0;$r<$rows;$r++) {
 					$items = count($ryu_catalog[$t][$r]);
 					for ($i=0;$i<$items;$i++) {
-					$ryu_catalog[$t][$r][$i] = $_POST['ryuzine_rack_cat'][$t][$r][$i];
+						if (isset( $_POST['ryuzine_rack_cat'][$t][$r][$i])) {
+							$ryu_catalog[$t][$r][$i] = $_POST['ryuzine_rack_cat'][$t][$r][$i];
+						}
 					}
 				}	
 			}
@@ -156,31 +158,14 @@ function ryuzine_tools_page() { ?>
 	}
 	if ( isset( $_POST['update_check']) ) {
 		if ( !ini_get('allow_url_fopen') ) {
-		echo "<div class='error'><p>Server is not configured to check remote files.  Go to <a href='http://www.ryumaru.com/products/ryuzine/' target='_blank'>www.ryumaru.com</a> and manually check/download any updates to the Ryuzine WebApp</p></div>";
+		echo "<div class='error'><p>Server is not configured to check remote files.  Go to <a href='https://github.com/ryumaru/ryuzine/releases/latest' target='_blank'>GitHub.com</a> and manually check/download any updates to the Ryuzine WebApp</p></div>";
 		} else {
-			$instfile = ryuzine_pluginfo('plugin_url').'ryuzine/CHANGELOG.txt';
-			$fh = fopen($instfile, "rb");
-			$instversion = fgets($fh);
-			fclose($fh);
-			$instversion = explode("-", $instversion);	// knock off alphabeta
-			$installed_version = preg_replace("/[a-zA-Z ]+/", "", $instversion[0] ); // numbers only
-			$installed_version = explode(".", $installed_version);	// split at dots
-			array_splice($installed_version,1,0,".");				// restore first dot
-			$installed_version = implode("",$installed_version);	// back to string
-			$checkfile = "http://192.168.1.108/ryumaru/downloads/ryuzinepress/version.txt";
-//			$checkfile = "http://www.ryumaru.com/downloads/ryuzinepress/version.txt";
-			$fh = fopen($checkfile, "rb");
-			$checktext = fgets($fh);
-			fclose($fh);
-			$checkversion = explode("-", $checktext); // knock off alphabeta
-			$current_version = preg_replace("/[a-zA-Z ]+/", "", $checkversion[0] ); // numbers only
-			$current_version = explode(".",$current_version); // split at dots
-			array_splice($current_version,1,0,".");			  // restore first dot
-			$current_version = implode("",$current_version);  // back to string
+			$installed_version = get_option('ryuzine_app_installed');
+			$current_version = ryuzine_current_version('','ryuzine');
 			if ( round($installed_version,4) < round($current_version,4) ){	// compare values
 			// If there is an update switch button to installer //
 				update_option('ryuzine_app_installed',0); 
-				echo "<div class='error'><p>There is an update available to version ".$checktext."</p></div>";
+				echo "<div class='error'><p>There is an update available to version ".$current_version."</p></div>";
 			} else {
 				echo "<div class='updated' style='background:#BCE954;border:1px solid #A0C544;'><p>You are using the current version of Ryuzine :-)</p></div>";
 			}
@@ -188,7 +173,7 @@ function ryuzine_tools_page() { ?>
 	}
 	
 	if ( isset( $_POST['generate_stylesheets']) ) {
-		if ( !is_writable(WP_PLUGIN_DIR.'/ryuzine-press/css') ) {
+		if ( !is_writable(ryuzine_pluginfo('plugin_path').'css') ) {
 			echo "<div class='error'><p>Files cannot be generated due to folder permissions.  Either use the in in-page styles or create external stylesheets manually.</p></div>";
 		} else {			
 			generate_ryuzine_stylesheets();
@@ -434,17 +419,13 @@ if ($pagenow=="edit.php" && $_GET['post_type'] == "ryuzine" && isset( $_GET['pag
 		<?php
 			$details = array();
 			array_push( $details, ryuzine_pluginfo('version') );
-			if (!file_exists(WP_PLUGIN_DIR.'/ryuzine-press/ryuzine/js/ryuzine.js')) {
+			if (!file_exists(ryuzine_pluginfo('plugin_path').'ryuzine/js/ryuzine.js')) {
 				$webapp = '<span style="color:red;">False</span>'; } else { $webapp = 'True';}
 			array_push($details, $webapp);
 			if ($webapp != 'True') {
 			array_push($details, '---');
 			} else {
-			$webapp_instfile = plugins_url().'/ryuzine-press/ryuzine/CHANGELOG.txt';
-			$webapp_fh = fopen($webapp_instfile, "rb");
-			$webapp_installed_version = fgets($webapp_fh);
-			fclose($webapp_fh);
-			$webapp_installed_version = preg_replace("/[a-zA-Z ]+/", "", $webapp_installed_version );
+			$webapp_installed_version = ryuzine_installed_version();
 			array_push($details, $webapp_installed_version);
 			};
 			if (file_exists(STYLESHEETPATH.'/single-ryuzine.php')) {
@@ -499,10 +480,6 @@ if ($pagenow=="edit.php" && $_GET['post_type'] == "ryuzine" && isset( $_GET['pag
 		<li>Either add the Ryuzine Press edition to a custom menu, provide a direct link to it on your site (remember it exists parallel to your blog, it isn't really part of it so the Ryuzine Press Edition itself 
 		does not normally show up in archives on your blog).</li>
 		</ol>
-<!--//	<h3>Additional Resources</h3>
-		<p><strong><a href="http://www.ryumaru.com/ryuzine/ryuzine-press-manual/" target="_blank">User Manual</a></strong> &mdash; presented in Ryuzine Press format, opens in a new window.</p>
-		<p><strong><a href="http://www.ryumaru.com/forum/" target="_blank">Official Forums</a></strong> &mdash; Join the discussion, ask questions, and search for answers tools Ryuzine Press in the user forums.  Opens in a new window.</p>
-//-->
 		<h3>License</h3>
 		<p><strong>The Ryuzine Press plugin</strong> is released under the GPLv3, in accordance with the WordPress license, because the plugin contains code derived WordPress or other GPL projects. The license file can be found in the plugin's folder.</p>
 		<p><strong>The Ryuzine webapps</strong> are released under the MPLv2 (Mozilla Public License) and only supply some scripts, images, and stylesheets to the Ryuzine Press plugin templates.  You may have received the Ryuzine webapp bundled with the plugin (allowable under MPLv2 Section 3.3) and the combined "Larger Work" is released under a GPL/MPL dual-license.</p>
@@ -700,9 +677,9 @@ if ($pagenow=="edit.php" && $_GET['post_type'] == "ryuzine" && isset( $_GET['pag
 		<table class="form-table">
 		<tr><th scope="row">
 <?php 
-	if (!file_exists(WP_PLUGIN_DIR.'/ryuzine-press/ryuzine/js/ryuzine.js')) {
-		if (!is_writable(WP_PLUGIN_DIR.'/ryuzine-press')) { ?>
-		<a href="http://www.ryumaru.com/downloads/ryuzine/0.9.5/ryuzine.zip"><input type="button" class="button-primary button-download" value="Download Ryuzine WebApp" /></a>
+	if (!file_exists(ryuzine_pluginfo('plugin_path').'ryuzine/js/ryuzine.js') || get_option('ryuzine_app_installed') == 0 ) {
+		if (!is_writable(ryuzine_pluginfo('plugin_path'))) { ?>
+		<a href="https://github.com/ryumaru/ryuzine/releases/latest"><input type="button" class="button-primary button-download" value="Download Ryuzine WebApp" /></a>
 		<p style="color:red;"><small>Plugin directory is read-only,<br />you will need to download<br />and manually install via FTP.</small></p>
 		<?php } else { ?>
 		<form method="post" action="">
@@ -723,7 +700,7 @@ if ($pagenow=="edit.php" && $_GET['post_type'] == "ryuzine" && isset( $_GET['pag
 		the Ryuzine package and install it manually.
 <?php } ?>
 		</td></tr></table>
-
+		
 <?php	if (file_exists(STYLESHEETPATH.'/single-ryuzine.php')) { ?>
 		<h3>Uninstall Ryuzine Press From Theme</h3>
 		<table class="form-table">
@@ -764,7 +741,7 @@ if ($pagenow=="edit.php" && $_GET['post_type'] == "ryuzine" && isset( $_GET['pag
 		<h3>Bulk Regenerate Issue-Specific Stylesheets</h3>
 		<table class="form-table">
 		<tr><th scope="row">
-		<?php if (!is_writable(WP_PLUGIN_DIR.'/ryuzine-press/css')) { ?>
+		<?php if (!is_writable(ryuzine_pluginfo('plugin_path').'css')) { ?>
 		<input type="button" class="button-secondary"  style="min-width: 140px;margin-left:10px;opacity:.45;" value="Regenerate Stylesheets"/>
 		<p style="color:red;"><small>Stylesheet folder is read-only.  You will have to use the in-page stylesheets.</small></p>		
 		<?php } else { ?>
