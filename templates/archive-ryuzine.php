@@ -178,8 +178,8 @@ RYU.config = {
 	autopromo	:	<?php echo $options_rack['autopromo']; ?>,			// 0 = off | value = animation interval in seconds (Ryuzine Rack)
 	maxpromos	:	<?php echo $options_rack['maxpromos']; ?>,			// Maximum number of promotions in carousel	(Ryuzine Rack)
 	AddOns		: [<?php 
-	$addons = explode(',',$options_addon['selected_addons']); 
 	if (isset($options_addon['selected_addons'])) {
+		$addons = explode(',',$options_addon['selected_addons']); 
 		$addons = explode(',',$options_addon['selected_addons']); 
 		for ($a=0;$a<count($addons);$a++) {
 			if ($addons[$a] != '') {
