@@ -79,13 +79,10 @@ function ryu_download_unzip($sub_path,$source_file,$file_name) {
 		return ; 
 	}
 	$current_version = ryuzine_current_version($sub_path,$source_file,$file_name);
-	echo $current_version;
-// return;
 	$source = 'https://github.com/ryumaru/'.$source_file.'/archive/'.$current_version.'.zip';
 	if (!$file_name) { $file_name = $source_file;}
 	$upload = WP_CONTENT_DIR.'/uploads/'.$source_file.'-'.$current_version.'.zip';
 	if ($sub_path != '') { $sub_path = $sub_path."/"; }
-//	echo '<br/>sub-path: '.$sub_path.'<br/>';
 	if (is_writable(WP_CONTENT_DIR.'/uploads')) {
 		// Directory is writable, lets copy the zip file //
 		copy($source,$upload);
@@ -105,7 +102,8 @@ function ryu_download_unzip($sub_path,$source_file,$file_name) {
 					}
 					rmdir($target);
 				}
-				rename(ryuzine_pluginfo('plugin_path').$sub_path.$source_file.'-'.$current_version,$target);
+				$target = ryuzine_pluginfo('plugin_path').$sub_path.'ryuzine';
+				rename(ryuzine_pluginfo('plugin_path').$sub_path.$source_file.'-'.$current_version, $target);
 			} else {
 				echo "<div class='error'><p>File could not be unzipped.  Install manually.</p></div>";			
 			}
