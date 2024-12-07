@@ -161,7 +161,7 @@ function ryuzine_tools_page() { ?>
 		echo "<div class='error'><p>Server is not configured to check remote files.  Go to <a href='https://github.com/ryumaru/ryuzine/releases/latest' target='_blank'>GitHub.com</a> and manually check/download any updates to the Ryuzine WebApp</p></div>";
 		} else {
 			$installed_version = get_option('ryuzine_app_installed');
-			$current_version = ryuzine_current_version('','ryuzine');
+			$current_version = ryuzine_current_version('','ryuzine','ryuzine');
 			if ( round($installed_version,4) < round($current_version,4) ){	// compare values
 			// If there is an update switch button to installer //
 				update_option('ryuzine_app_installed',0); 

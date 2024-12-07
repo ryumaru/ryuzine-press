@@ -4,8 +4,8 @@ Plugin URI: http://www.ryumaru.com/downloads/packages/
 Contributors: offworld
 Tags: Issue, Issue Manager, Editions, Magazine, Webcomics
 Requires at least: 3.5
-Tested up to: 5.4.2
-Stable Tag: 1.1
+Tested up to: 6.4.4
+Stable Tag: 1.2
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -81,6 +81,9 @@ A. Technically yes, if any of the posts included in the Edition have another Edi
 
 
 == Changelog ==
+= 1.2 =
+* Removed "ceo_pluginfo" checks for Comic Easel
+* Added "post_type_exists('comic')" checks instead
 
 = 1.1 =
 * Requires PHP 5.6 or later (tested up to PHP 7.4.8)

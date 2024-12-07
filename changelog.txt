@@ -1,5 +1,9 @@
 RYUZINE PRESS CHANGELOG
 
+Version 1.2
+* Removed "ceo_pluginfo" checks for Comic Easel
+* Added "post_type_exists('comic')" checks instead
+
 Version 1.1
 * Requires PHP 5.3 or later (tested up to PHP 7.4.8)
 * Plugin now updates from GitHub releases using WP update system.

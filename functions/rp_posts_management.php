@@ -11,8 +11,8 @@
 //add_filter('manage_taxonomies_for_post_columns', 'ryuzine_issues_taxonomies' );
 //add_filter('manage_taxonomies_for_ryuzine_columns', 'ryuzine_issues_taxonomies');
 
-// Add "Ryuzine Issues" column to Comic Easel if it is Activated
-if (function_exists('ceo_pluginfo')) { // if Comic Easel add to that too
+// Add "Ryuzine Issues" column to Comic Easel / ComicPost management
+if ( post_type_exists('comic') ) {
 	add_filter('manage_edit-comic_columns','ryuzine_add_issues_column', 99, 1);
 	add_action('manage_comic_posts_custom_column', 'ryuzine_issues_column_data',10,2);
 
@@ -99,23 +99,10 @@ function add_ryuzine_taxonomy_filters() {
 	if ($typenow == 'ryuzine') {
 	$taxonomies[] = 'rackcats'; // Only show this for Ryuzine post-type!
 	}
-	
-	if (function_exists('ceo_pluginfo')) {
-//		$ceo_v = ceo_pluginfo('version');  // Reports 1.5.8.1 for v 1.5.9!
-		$plugins_url = WP_PLUGIN_DIR;
-		$plugin_data = get_plugin_data( ''.$plugins_url.'/comic-easel/comiceasel.php'); 
-		$ceo_v = $plugin_data['Version'];
-		$ceo_v = explode('.',$ceo_v);
-		if ($ceo_v[0] > 1) { 		$new_ceo = true;	// v 2+
-		} elseif ( $ceo_v[1] > 5) { $new_ceo = true;	// v 1.6+
-		} elseif ( $ceo_v[2] > 8) { $new_ceo = true;	// v 1.5.9+
-		} elseif ( $ceo_v[3] > 1) { $new_ceo = true;	// v 1.5.8.2+
-		} else { $new_ceo = false; };
-	}
-	
+	// NOTE: Checks for Comic Easel and Comic Easel version number removed RP 1.2
  
 	// must set this to the post type you want the filter(s) displayed on
-	if( $typenow == 'post' || $typenow == 'ryuzine' || ($typenow == 'comic' && $new_ceo == false) || $typenow == 'mangapress_comic'){
+	if( $typenow == 'post' || $typenow == 'ryuzine' || $typenow == 'comic' || $typenow == 'mangapress_comic'){
 
 		foreach ($taxonomies as $tax_slug) {
 			$tax_obj = get_taxonomy($tax_slug);

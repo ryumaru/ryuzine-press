@@ -76,26 +76,25 @@ function ryuzine_display_comic() {
 				$hovertext = comicpress_the_hovertext($post);	
 			}
 		}
-	}
-	// Comic Easel (ComicPress 4)
-	if (function_exists('ceo_the_hovertext')) {
-		$post_image_id = get_post_thumbnail_id($post->ID);
-		if ($post_image_id) { // If there's a featured image.
-			$hovertext = ceo_the_hovertext();
-			$thumbnail = wp_get_attachment_image_src( $post_image_id,'full', false);
-			if (is_array($thumbnail)) $thumbnail = reset($thumbnail);
+	} else {
+		if ( function_exists('ceo_the_hovertext') ){
+			$the_hovertext = ceo_the_hovertext();
+		} else {
+			$the_hovertext = '';
 		}
-	};
-	// MangaPress
-	if (defined('MP_FOLDER')) {
 		$post_image_id = get_post_thumbnail_id($post->ID);
-		if ($post_image_id) {
-			$hovertext = '';
+		if ($post_image_id) { // if there is a Featured Image
+			$hovertext = $the_hovertext;
 			$thumbnail = wp_get_attachment_image_src( $post_image_id, 'full', false);
-			if (is_array($thumbnail)) $thumbnail = reset($thumbnail);
+			if (is_array($thumbnail)) { $thumbnail = reset($thumbnail);}
 		}
 	}
-	$output .= '<img src="'.$thumbnail.'" alt="'.$hovertext.'" title="'.$hovertext.'" />';
+	// apply comicpost image protections or generic image placement...
+	if ( function_exists('comicpost_pluginfo') ){
+		$output .= do_shortcode('[insertcomic single="true" id="'.$post->ID.'" size="full" link="false"]');
+	} else {
+		$output .= '<img src="'.$thumbnail.'" alt="'.$hovertext.'" title="'.$hovertext.'" />';
+	}
 	return apply_filters('ryuzine_display_comic', $output);
 };
 

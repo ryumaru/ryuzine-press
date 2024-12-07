@@ -3,14 +3,14 @@
 Plugin Name: Ryuzine Press
 Plugin URI: http://www.ryumaru.com/products/ryuzine/ryuzine-press/
 Description: A WordPress plugin to bridge to the Ryuzine webapp.
-Version: 1.1
+Version: 1.2
 Author: K.M. Hansen
 Author URI: http://www.kmhcreative.com
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 */
 
-/*  Copyright 2012-2020  K.M. Hansen  (email : software@ryumaru.com)
+/*  Copyright 2012-2024  K.M. Hansen  (email : software@ryumaru.com)
 
     Ryuzine Press plugin is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as 
@@ -57,7 +57,7 @@ function ryuzine_pluginfo($whichinfo = null) {
 				'plugin_url' => plugin_dir_url(__FILE__),
 				'plugin_path' => plugin_dir_path(__FILE__),
 				'plugin_basename' => plugin_basename(__FILE__),
-				'version' => '1.1'
+				'version' => '1.2'
 		);
 		// Combine em.
 		$ryuzine_pluginfo = array_merge($ryuzine_pluginfo, $ryuzine_addinfo);
@@ -129,8 +129,8 @@ function create_ryuzine_type() {
 			'hierarchical' => true 
 		),
 	));
-	// Try to enable categories for Comic Easel
-	if (function_exists('ceo_pluginfo')) {
+	// Try to enable categories for Comic Easel and ComicPost
+	if (post_type_exists('comic')){
 		register_taxonomy_for_object_type('issues', 'comic');
 	};
 	if (defined('MP_FOLDER')) {
@@ -191,7 +191,7 @@ function ryuzine_activation()
 register_activation_hook( __FILE__, 'ryuzine_activation' );
 
 // Define default option settings
-function add_defaults_fn($reset = false) {
+function rp_add_defaults_fn($reset = false) {
 	$options = array(	
 		'ryuzine_opt_covers' => array(
 		'autocover' => 0,
@@ -322,7 +322,7 @@ function add_defaults_fn($reset = false) {
 		}
 }
 // Add Database Fields If Needed //
-register_activation_hook(__FILE__, 'add_defaults_fn');
+register_activation_hook(__FILE__, 'rp_add_defaults_fn');
 
 	
 // See if a previous beta install has Rack Media Categories Assigned
@@ -442,9 +442,7 @@ register_activation_hook(__FILE__, 'ryuzine_remove_old_templates');
   	$post = get_post($_GET['post']);
   	$typenow = $post->post_type;
 	}
-	if ( is_admin() && ($pagenow=="plugins.php" || ( ($pagenow=="edit.php" || $pagenow=="edit-tags.php" || $pagenow=="post-new.php") 
-//	&& 
-//	$_GET['post_type'] == "ryuzine" 
+	if ( is_admin() && ($pagenow=="plugins.php" || ( ($pagenow=="edit.php" || $pagenow=="edit-tags.php" || $pagenow=="post-new.php") && $typenow == "ryuzine"
 	) ) ) {
 		if (!file_exists(ryuzine_pluginfo('plugin_path').'ryuzine/js/ryuzine.js')) {
 		add_action('admin_notices', 'ryu_install_app_notice');

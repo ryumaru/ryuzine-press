@@ -284,7 +284,30 @@ RYU.php = {
 </script>
 <script type="text/javascript" src="<?php echo $ryupress; ?>ryuzine/js/sniffer.js" ></script>
 <script type="text/javascript" src="<?php echo $ryupress; ?>ryuzine/js/ryuzine.js" ></script>
-
+<?php
+	if (function_exists('comicpost_pluginfo')) {
+			$options = get_option('comicpost_options');
+			if ( !empty($options['faux_watermark']) ){
+				if ( !empty($options['watermark_text']) ){
+					$text = $options['watermark_text'];
+				} else {
+					$text = get_bloginfo();
+				}
+				if ( !empty($options['watermark_opacity']) ){
+					$opacity = $options['watermark_opacity'];
+				} else {
+					$opacity = '.25';
+				}
+		?>
+				<style id="faux_wm" type="text/css">
+				.comicpost-glass {
+					background-image: url('data:image/svg+xml,<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><g transform="matrix(0.707107,0.707107,-0.707107,0.707107,13.2715,18.0373)"><text x="0px" y="0px" style="font-family:ArialMT, Arial, sans-serif;font-size:12px;"><?php echo $text; ?></text></g></svg>') !important;
+					opacity: <?php echo $opacity; ?>;
+				}
+				</style>
+		<?php }
+		};
+?>
 </head>
 <body id="ryuzinereader">
 <a href="#nav" id="skip2nav">Skip to Navigation</a>
@@ -509,9 +532,9 @@ RYU.php = {
 			} else if ('comic'==get_post_type() ) {
 				if (function_exists('easel_comics_display_comic')) {
 					echo easel_comics_display_comic('full');
-				} else if (function_exists('ceo_pluginfo')) {
+				} else { // Generic post_type = "comic" (Comic Easel / ComicPost)
 					echo ryuzine_display_comic();
-				} else {};
+				};
 					if ($postbody == "1") {the_content();} // If in comics category and text enabled
 			} else if ( 'mangapress_comic'==get_post_type() ) {
 					echo ryuzine_display_comic();
@@ -529,12 +552,6 @@ RYU.php = {
 			</small>
 			<?php }; 
 			if ($config) { $comments = $config['comments']; } else { $comments = $options_page['comments']; };
-/*			if ( $comments == "1" ) {
-					$themepath = get_stylesheet_directory_uri().'/comments.php';
-					echo $themepath.'<br/>';
-					$withcomments = true; 			
-					comments_template( ''.$themepath.'',true ); // Get wp-comments.php template 
-*/
 if ( $comments == "1") {
 	if (comments_open($post->ID)) {
 		comments_template();
@@ -650,5 +667,10 @@ if ( $comments == "1") {
 		<p class="splash-fineprint">Ryuzine Copyright 2011-2020 K.M. Hansen &amp; Ryu Maru - All Rights Reserved</p>
 	</div>
 </div>
+<?php
+	if ( function_exists('comicpost_pluginfo') ){
+		echo '<script id="string_decoder-js" type="text/javascript" src="'.comicpost_pluginfo('plugin_url').'js/comicpost-decoder.js"></script>';
+	}
+?>
 </body>
 </html>

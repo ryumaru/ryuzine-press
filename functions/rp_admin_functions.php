@@ -72,17 +72,20 @@ function ryuzine_uninstall( $which_ryu ) {
 }
 
 // Generic Function to Install - only works in PHP 5 and later //
-function ryu_download_unzip($sub_path,$file_name) {
+function ryu_download_unzip($sub_path,$source_file,$file_name) {
 	// Check permissions
 	if ( !current_user_can( 'administrator' ) ) {
 		echo "<div class='error'><p>Sorry, you do not have the correct priveledges to install the files.</p></div>";
 		return ; 
 	}
-	$current_version = ryuzine_current_version($sub_path,$file_name);
+	$current_version = ryuzine_current_version($sub_path,$source_file,$file_name);
+	echo $current_version;
 // return;
-	$source = 'https://github.com/ryumaru/'.$file_name.'/archive/'.$current_version.'.zip';
-	$upload = WP_CONTENT_DIR.'/uploads/'.$file_name.'-'.$current_version.'.zip';
+	$source = 'https://github.com/ryumaru/'.$source_file.'/archive/'.$current_version.'.zip';
+	if (!$file_name) { $file_name = $source_file;}
+	$upload = WP_CONTENT_DIR.'/uploads/'.$source_file.'-'.$current_version.'.zip';
 	if ($sub_path != '') { $sub_path = $sub_path."/"; }
+//	echo '<br/>sub-path: '.$sub_path.'<br/>';
 	if (is_writable(WP_CONTENT_DIR.'/uploads')) {
 		// Directory is writable, lets copy the zip file //
 		copy($source,$upload);
@@ -102,7 +105,7 @@ function ryu_download_unzip($sub_path,$file_name) {
 					}
 					rmdir($target);
 				}
-				rename(ryuzine_pluginfo('plugin_path').$sub_path.$file_name.'-'.$current_version,$target);
+				rename(ryuzine_pluginfo('plugin_path').$sub_path.$source_file.'-'.$current_version,$target);
 			} else {
 				echo "<div class='error'><p>File could not be unzipped.  Install manually.</p></div>";			
 			}
@@ -115,9 +118,9 @@ function ryu_download_unzip($sub_path,$file_name) {
 	}
 }
 
-function ryuzine_current_version($sub_path,$file_name) {
+function ryuzine_current_version($sub_path,$source_file,$file_name) {
 	// Get the version number of the latest release on Github //
-	$checkfile="https://github.com/ryumaru/".$file_name."/releases/latest";
+	$checkfile="https://github.com/ryumaru/".$source_file."/releases/latest";
 	
 	if (extension_loaded('curl')) {
 	// try cURL first
@@ -148,7 +151,7 @@ function ryuzine_current_version($sub_path,$file_name) {
 //	echo 'get_headers() => '.$check."</br>";
 /*	} else if (function_exists('fsockopen')) {
 		// This doesn't necessarily get a valid release link, however
-		$checkfile = "https://raw.githubusercontent.com/ryumaru/".$file_name."/master/CHANGELOG.txt"
+		$checkfile = "https://raw.githubusercontent.com/ryumaru/".$source_file."/master/CHANGELOG.txt"
 			$fh = fopen($checkfile, "rb");
 			$checkversion = fgets($fh);
 			fclose($fh);
@@ -197,7 +200,7 @@ function install_ryuzine_app() {
 		return ; 
 	}
 	// OK, we're authenticated let's do it!	
-	ryu_download_unzip('','ryuzine');
+	ryu_download_unzip('','ryuzine','ryuzine.zip');
 	if (file_exists(ryuzine_pluginfo('plugin_path').'ryuzine/js/ryuzine.js')) {
 		update_option('ryuzine_app_installed',1);
 		echo "<div class='updated'><p>Ryuzine WebApp installation complete.</p></div>";	
